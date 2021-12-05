@@ -1,3 +1,6 @@
+# https://veres.tech
+# ver. 0.1
+
 import digitalio
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
@@ -11,7 +14,7 @@ import displayio
 from adafruit_display_text import label
 import gc9a01
 
-# pre-release - code needs clean up.
+
 
 # Function to display image on the screen
 def display_image(path):
