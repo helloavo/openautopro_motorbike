@@ -1,7 +1,7 @@
 # https://veres.tech
 # ver. 0.1
 
-import digitalio
+import digitalio 
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
@@ -12,11 +12,13 @@ import busio
 import terminalio
 import displayio
 from adafruit_display_text import label
-import gc9a01
+import gc9a01 # display library for round LCD screen
+
+# vars 
+boot_timer = 30 # gives open auto time to boot up before try to connect the USB HID, connect too early and the 'keyboard' wont work.
 
 
-
-# Function to display image on the screen
+# Function to display a .BMP image on the screen
 def display_image(path):
     img_bitmap = displayio.OnDiskBitmap(open(path, "rb"))
     img_palette = displayio.ColorConverter()
@@ -85,9 +87,9 @@ def media_menu():
     time.sleep(1)
     while True:
         if not buttons[1].value:
-            kbd.press(Keycode.X)
+            kbd.press(Keycode.B)
             time.sleep(.09)
-            kbd.release(Keycode.X)
+            kbd.release(Keycode.B)
             time.sleep(.09)
             menu_idle_timer = 0
         if not buttons[2].value:
@@ -238,7 +240,7 @@ display = gc9a01.GC9A01(display_bus, width=240, height=240, backlight_pin=tft_bl
 main = displayio.Group()
 display.show(main)
 
-# Draw boot timer text label
+
 display_image ("/images/a.bmp")
 text = ""
 text_area = label.Label(terminalio.FONT, text=text, color=0x000000, anchor_point=(0.5,0.5), anchored_position=(0,0))
@@ -249,24 +251,20 @@ main.append(text_group)
 # Animate the text 
 theta = math.pi
 r = 75
-x = 30
 
-while x > 0:
-    text_area.text = str(x)
-    #debug
-    #print(time.monotonic(),str(x))
+
+#rotate timer around the edge of the screen
+while boot_timer > 0:
+    text_area.text = str(boot_timer)
     text_group.x = 120 + int(r * math.sin(theta))
     text_group.y = 120 + int(r * math.cos(theta))
     theta -= 0.1
     time.sleep(1)
-    x = x -1
-main.pop()  # remove image
-#display_image ("/images/lets_go.bmp")
+    boot_timer = boot_timer -1
+main.pop()
 
-#time.sleep(5)
-# Initialize Keybaord
+# initialize keyboard
 kbd = Keyboard(usb_hid.devices)
-#main.pop()  # remove image
 time.sleep(1)
 display_image ("/images/main_menu.bmp")
 screensaver = 0
